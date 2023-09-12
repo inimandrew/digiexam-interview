@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=digiexamuser
+      - DB_PASSWORD=digiexampassword
+      - DB_NAME=digiexamdb
+      - DB_PORT=5432
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8080
+    ports:
+      - '8080:8080'
+    networks:
+      - backend
+    
+  postgres:
+    image: postgres:14-bullseye
+    restart: always
+    environment:
+      - POSTGRES_USER=digiexamuser
+      - POSTGRES_PASSWORD=digiexampassword
+      - POSTGRES_DB=digiexamdb
+    ports:
+      - '5432:5432'
+    volumes: 
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+      
+volumes:
+  db-data:
+    driver: local
+networks:
+  backend:   
